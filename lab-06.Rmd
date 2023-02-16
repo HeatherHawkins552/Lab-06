@@ -18,6 +18,8 @@ library(mosaicData)
 ```{R reading}
 staff <- read_csv("data/instructional-staff.csv")
 
+view(staff)
+
 #Turning into a longer data frame
 staff_long <- staff %>%
   pivot_longer(cols = -faculty_type, names_to = "year") %>%
@@ -75,6 +77,7 @@ Can you help them make improve it? First, brainstorm how you would improve it. T
 
 To improve the fisheries graph, we could plot the data with a cap scale- since there are only a few countries that farm and capture an enormous amount of fish. 
 
+
 Or maybe even focus on the TOP countries that farm and capture fish. 
 Since this Lab is about converting data and comparing, Ill focus on the second method
 
@@ -98,10 +101,75 @@ fisheries_long %>%
 ```
 ### Exercise 4
 
+```{R Loading}
+library(tidyverse) 
+library(mosaicData) 
+
+data(Whickham)
+
+view(Whickham)
+```
 ## Part 1
+What type of study do you think these data come from: observational or experiment? Why?
+
+Observational, since this is quasi-experimental data (i.e., we are not making people smokers or non smokers, not making them dead or alive) there are no manipulations used, therefore we can just collect and observe the data.
+
 ## Part 2
+How many observations are in this dataset? What does each observation represent?
+
+There are 1314 observations, Each observation is a person in Whickham. 
+
+```{R sumdata}
+summary(Whickham)
+```
+
 ## Part 3
+How many variables are in this dataset? What type of variable is each? Display each variable using an appropriate visualization.
+
+There are only 3 variables: Outcome (Dead or Alive), Smoker(non and smoker), and Age. Outcome and Smoker are categorical data, while age is numeric.
+
+```{R view variables}
+
+Whickham %>%
+ggplot(aes(x=age, fill=smoker)) +geom_bar()+ facet_wrap(~outcome)+ labs (title= "Smokers in Whickham", x= "Age", y= "Number of People" ) + labs(fill="Smoker") 
+```
 ## Part 4
+What would you expect the relationship between smoking status and health outcome to be?
+
+I expect a negative correlation
+
 ## Part 5
+Create a visualization depicting the relationship between smoking status and health outcome. Briefly describe the relationship, and evaluate whether this meets your expectations. Additionally, calculate the relevant conditional probabilities to help your narrative. Here is some code to get you started:
+
+```{R Visual}
+Whickham %>%
+ggplot(aes(fill = smoker, x = outcome))+
+geom_bar()+ labs (title= "Relationship Between Health and Smoking", x= "Health Outcome", subtitle= "For people in Whickham", y= "Number of People" ) + labs(fill="Smoker") 
+```
 ## Part 6
+Create a new variable called age_cat using the following scheme:
+age <= 44 ~ "18-44"
+age > 44 & age <= 64 ~ "45-64"
+age > 64 ~ "65+"
+
+```{R age-cat}
+Whickham_Age <- Whickham %>% 
+  mutate(age_cat = case_when(
+    age <= 44 ~ "18-44",
+    age > 44 & age <= 64 ~ "45-64",
+    age > 64 ~ "65+"))
+```
+
+
 ## Part 7
+Re-create the visualization depicting the relationship between smoking status and health outcome, faceted by age_cat. What changed? What might explain this change? Extend the contingency table from earlier by breaking it down by age category and use it to help your narrative. We can use the contingency table to examine how the relationship between smoking status and health outcome differs between different age groups. This extension will help us better understand the patterns we see in the visualization, and explain any changes we observe.
+
+```{R view}
+Whickham_Age %>%
+  count(smoker, age, outcome)
+
+Whickham_Age %>%
+ggplot(aes(fill = smoker, x = outcome))+
+facet_wrap(~age_cat)+geom_bar()+ labs (title= "Smokers in Whickham", x= "Health Outcome", y= "Number of People" ) + labs(fill="Smoker") 
+```
+```
