@@ -198,25 +198,46 @@ ggplot(aes(x=age, fill=smoker)) +geom_bar()+ facet_wrap(~outcome)+ labs (title= 
 What would you expect the relationship between smoking status and health
 outcome to be?
 
-I expect a negative correlation
+I expect a negative correlation, those who are dead are more likely to
+be smokers, and those who are alive are more likely to be non-smokers
 
 ## Part 5
 
-Create a visualization depicting the relationship between smoking status
-and health outcome. Briefly describe the relationship, and evaluate
-whether this meets your expectations. Additionally, calculate the
-relevant conditional probabilities to help your narrative. Here is some
-code to get you started:
+There doesn’t seem to be a difference or a significant relationship
+between smoking and health. dead and alive individuals are of almost
+equal amounts of smokers and non-smokers.
+
+on the conditional probabilites, it seems as if it was the opposite-
+smokers were likely likely to die than non-smokers
 
 ``` r
 Whickham %>%
-ggplot(aes(fill = smoker, x = outcome))+
-geom_bar()+ labs (title= "Relationship Between Health and Smoking", x= "Health Outcome", subtitle= "For people in Whickham", y= "Number of People" ) + labs(fill="Smoker") 
+ggplot(aes(fill = outcome, x = smoker))+
+geom_bar()+ labs (title= "Relationship Between Health and Smoking", x= "Smoker", subtitle= "For people in Whickham", y= "Number of People" ) + labs(fill="Outcome") 
 ```
 
-![](lab-06_files/figure-gfm/Visual-1.png)<!-- --> \## Part 6 Create a
-new variable called age_cat using the following scheme: age \<= 44 \~
-“18-44” age \> 44 & age \<= 64 \~ “45-64” age \> 64 \~ “65+”
+![](lab-06_files/figure-gfm/Visual-1.png)<!-- -->
+
+``` r
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prob_dead = n/sum(n))
+```
+
+    ## # A tibble: 4 × 4
+    ## # Groups:   smoker [2]
+    ##   smoker outcome     n prob_dead
+    ##   <fct>  <fct>   <int>     <dbl>
+    ## 1 No     Alive     502     0.686
+    ## 2 No     Dead      230     0.314
+    ## 3 Yes    Alive     443     0.761
+    ## 4 Yes    Dead      139     0.239
+
+## Part 6
+
+Create a new variable called age_cat using the following scheme: age \<=
+44 \~ “18-44” age \> 44 & age \<= 64 \~ “45-64” age \> 64 \~ “65+”
 
 ``` r
 Whickham_Age <- Whickham %>% 
@@ -228,14 +249,23 @@ Whickham_Age <- Whickham %>%
 
 ## Part 7
 
-Re-create the visualization depicting the relationship between smoking
-status and health outcome, faceted by age_cat. What changed? What might
-explain this change? Extend the contingency table from earlier by
-breaking it down by age category and use it to help your narrative. We
-can use the contingency table to examine how the relationship between
-smoking status and health outcome differs between different age groups.
-This extension will help us better understand the patterns we see in the
-visualization, and explain any changes we observe.
+What changed? As you can see, those who were 65+ were more likely to be
+dead 20 years later, and those who were 18-44 were least likely to be
+dead 20 years later.
+
+Additionally, you can see that there were not many smokers in the 65+
+range. 45-64 was a little better, and 18-44 was pretty evenly split.
+
+If we look at the death of smokers in the 65+ cat and compare it to
+those who are alive, MOST smokers died 20 years later. Same as
+non-smokers.
+
+What might explain this change?
+
+The data became categorized into groups. Because of this, we are able to
+see the points mentioned above. the age ratio, and the amount of smokers
+in the 65+ scewed the data to make the overall data seem as if there
+wasnt a difference in the health outcome of smokers and non-smokers.
 
 ``` r
 Whickham_Age %>%
@@ -455,4 +485,11 @@ ggplot(aes(fill = smoker, x = outcome))+
 facet_wrap(~age_cat)+geom_bar()+ labs (title= "Smokers in Whickham", x= "Health Outcome", y= "Number of People" ) + labs(fill="Smoker") 
 ```
 
-![](lab-06_files/figure-gfm/view-1.png)<!-- --> \`\`\`
+![](lab-06_files/figure-gfm/view-1.png)<!-- -->
+
+``` r
+Whickham_Age %>%
+ggplot(aes(x=age, fill=smoker)) +geom_bar()+ facet_wrap(~outcome)+ labs (title= "Smokers in Whickham", x= "Age", y= "Number of People" ) + labs(fill="Smoker")+ facet_wrap(~age_cat) 
+```
+
+![](lab-06_files/figure-gfm/view-2.png)<!-- --> \`\`\`
